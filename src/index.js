@@ -9,6 +9,8 @@ import helmet from 'helmet';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import errorHandler from './middleware/errorHandler.js';
+//
+import adminRoute from './route/adminRoute.js';
 
 // config
 const { json, urlencoded } = pkg;
@@ -24,28 +26,30 @@ app.use(helmet());
 app.use(morgan('common'));
 app.use(helmet.crossOriginResourcePolicy({ policy: 'cross-origin' }));
 app.use('/assets', express.static(path.join(__dirname, './assets')));
+
 // routes
+app.use('/admin', adminRoute);
 
 // test route
 app.get('/', (req, res) => {
-    return res.status(200).send({ msg: 'Server OK' });
+  return res.status(200).send({ msg: 'Server OK' });
 });
 
 // error handler
 app.use(errorHandler);
 
 const start = async () => {
-    try {
-        mongoose.connect(process.env.MONGO_URL, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        })
+  try {
+    mongoose.connect(process.env.MONGO_URL, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
 
-        app.listen(process.env.PORT || 5005, () => {
-            console.log(`Server start on port ${process.env.PORT}`);
-        });
-    } catch (err) {
-        console.log(`${err} Error when server start ${process.env.PORT}`);
-    }
+    app.listen(process.env.PORT || 5005, () => {
+      console.log(`Server start on port ${process.env.PORT}`);
+    });
+  } catch (err) {
+    console.log(`${err} Error when server start ${process.env.PORT}`);
+  }
 };
 start();
