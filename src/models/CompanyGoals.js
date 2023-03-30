@@ -8,6 +8,7 @@ const CompanyGoalsSchema = mongoose.Schema(
     },
     goals: [
       {
+        _id: false,
         id: { type: Schema.Types.ObjectId, required: true, auto: true },
         goal: { type: String, required: true },
         complete: { type: Boolean, default: false },

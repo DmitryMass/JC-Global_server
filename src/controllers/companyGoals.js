@@ -2,15 +2,13 @@ import CompanyGoals from '../models/CompanyGoals.js';
 
 export const getCurrentCompanyGoals = async (req, res) => {
   try {
-    const goals = await CompanyGoals.find();
-    if (!goals)
-      return res.status(404).send({ msg: 'Цели компании еще не установлены' });
+    const goals = await CompanyGoals.find({ archived: false });
+    if (!goals.length)
+      return res.status(404).send({
+        msg: 'Цели компании еще не установлены или находятся в архиве',
+      });
 
-    const nonArchivedGoals = goals.find((goal) => goal.archived === false);
-    if (!nonArchivedGoals)
-      return res.status(404).send({ msg: 'Все цели находятся в Архиве.' });
-
-    return res.status(200).send(nonArchivedGoals);
+    return res.status(200).send(goals);
   } catch (err) {
     return res
       .status(500)
@@ -54,10 +52,10 @@ export const deleteCompanyGoals = async (req, res) => {
       return res.status(404).send({ msg: 'Целей с текущим ID не найдено' });
 
     await goals.updateOne({
-      goals: goals.goals.filter((g) => g.id !== currentGoalId),
+      goals: goals.goals.filter((g) => g.id.toString() !== currentGoalId),
     });
-    await goals.save();
 
+    await goals.save();
     return res.status(200).send({ msg: 'Цель удалена' });
   } catch (err) {
     return res
@@ -68,21 +66,33 @@ export const deleteCompanyGoals = async (req, res) => {
 
 export const editCompanyGoals = async (req, res) => {
   try {
-    const { newGoal, goalId } = req.body;
+    const { newGoal, goalId, status = false } = req.body;
     const { id } = req.params;
     const goal = await CompanyGoals.findById(id);
     if (!goal) return res.status(404).send({ msg: 'Цель компании не найдена' });
-
-    const editedGoal = goal.goals.find((i) => i.id === goalId);
-    if (!editedGoal)
+    const editedGoal = goal.goals.find((i) => i.id.toString() === goalId);
+    if (!editedGoal) {
       return res.status(404).send({ msg: 'Такая цель не найдена' });
-    editedGoal.goal = newGoal;
+    }
+    if (newGoal) {
+      editedGoal.goal = newGoal;
+      editedGoal.complete = status;
+      await goal.updateOne({
+        goals: goal.goals.map((item) =>
+          item.id.toString() !== goalId ? item : editedGoal
+        ),
+      });
+      await goal.save();
+      return res.status(200).send({ msg: 'Цель обновлена' });
+    }
 
+    editedGoal.complete = status;
     await goal.updateOne({
-      goals: goal.goals.map((item) => (item.id !== goalId ? item : editedGoal)),
+      goals: goal.goals.map((item) =>
+        item.id.toString() !== goalId ? item : editedGoal
+      ),
     });
     await goal.save();
-
     return res.status(200).send({ msg: 'Цель обновлена' });
   } catch (err) {
     return res
@@ -91,47 +101,29 @@ export const editCompanyGoals = async (req, res) => {
   }
 };
 
-// export const archivedCompanyGoal = async(req,res) => {
-//   try{
-
-//   }
-// }
-
-export const isCompleteGoal = async (req, res) => {
+export const archivedCompanyGoal = async (req, res) => {
   try {
     const { id } = req.params;
-    const { currentGoalId } = req.body;
-
-    const goal = await CompanyGoals.findById(id);
-    if (!goal) return res.status(404).send({ msg: 'Цель компании не найдена' });
-    const editedGoal = goal.goals.find((gl) => gl.id === currentGoalId);
-    if (!editedGoal) return res.status(404).send({ msg: 'Цель не найдена' });
-    editedGoal.complete = !editedGoal.complete;
-
-    await goal.updateOne({
-      goals: goal.goals.map((item) =>
-        item.id !== currentGoalId ? item : editedGoal
-      ),
+    const goals = await CompanyGoals.findById(id);
+    if (!goals) return res.status(404).send({ msg: 'Целей не найдено' });
+    await goals.updateOne({
+      archived: !goals.archived,
     });
-    await goal.save();
+    await goals.save();
 
-    return res.status(200).send({ msg: 'Выполнение цели обновлено' });
+    return res.status(202).send({ msg: 'Успех!' });
   } catch (err) {
     return res
       .status(500)
-      .send({ msg: 'Проблемы при обновлении статуса цели' });
+      .send({ msg: 'Проблемы с сервером, не получилось архивировать цель' });
   }
 };
-
 export const getArchivedGoals = async (req, res) => {
   try {
-    const goals = await CompanyGoals.find();
-    if (!goals) return res.status(404).send({ msg: 'Целей не найдено' });
+    const goals = await CompanyGoals.find({ archived: true });
+    if (!goals.length) return res.status(404).send({ msg: 'Целей не найдено' });
 
-    const archivedGoals = goals.filter((g) => g.archived === true);
-    if (!archivedGoals)
-      return res.status(204).send({ msg: 'Архивированых целей пока нет.' });
-    return res.status(200).send(archivedGoals);
+    return res.status(200).send(goals);
   } catch (err) {
     return res.status(500).send({
       msg: 'Проблемы с сервером, не получилось получить архивированые цели',
