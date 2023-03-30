@@ -29,12 +29,6 @@ app.use('/assets', express.static(path.join(__dirname, './assets')));
 
 // routes
 app.use('/admin', adminRoute);
-
-// test route
-app.get('/', (req, res) => {
-  return res.status(200).send({ msg: 'Server OK' });
-});
-
 // error handler
 app.use(errorHandler);
 

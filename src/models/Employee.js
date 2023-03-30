@@ -2,6 +2,10 @@ import mongoose, { Schema } from 'mongoose';
 
 const EmployeeSchema = mongoose.Schema(
   {
+    role: {
+      type: String,
+      default: 'Employee',
+    },
     email: {
       type: String,
       required: true,
