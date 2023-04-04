@@ -1,4 +1,8 @@
 import News from '../models/News.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export const getNews = async (req, res) => {
   try {
@@ -15,14 +19,38 @@ export const getNews = async (req, res) => {
 
 export const createNews = async (req, res) => {
   try {
-    const { text, header, imgPath } = req.body;
+    const { text, header } = req.body;
+
+    if (!req.files) {
+      const newNews = new News({
+        text,
+        header,
+      });
+      await newNews.save();
+      const news = await News.find();
+      return res.status(200).send(news);
+    }
+
+    const paths = req.files.files.map((file) => {
+      const newFileName = `${Date.now()}-${file.name}`;
+      file.mv(`${__dirname}/assets/${newFileName}`, (err) => {
+        if (err) {
+          return res.status(400).send(err);
+        }
+      });
+      return encodeURI(newFileName);
+    });
+
     const newNews = new News({
       text,
       header,
-      imgPath,
+      imgPath: paths,
     });
     await newNews.save();
-    return res.status(200).send({ msg: 'Новость создана' });
+
+    const news = await News.find();
+
+    return res.status(200).send(news);
   } catch (err) {
     return res.status(500).send({ msg: 'Ошибка сервера при создании новости' });
   }

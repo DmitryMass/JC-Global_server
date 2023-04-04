@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import * as dotenv from 'dotenv';
 dotenv.config();
-import pkg from 'body-parser';
+import bodyParser from 'body-parser';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import { fileURLToPath } from 'url';
@@ -11,17 +11,24 @@ import path from 'path';
 import errorHandler from './middleware/errorHandler.js';
 //
 import adminRoute from './route/adminRoute.js';
+import fileUpload from 'express-fileupload';
 
 // config
-const { json, urlencoded } = pkg;
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
 mongoose.set('strictQuery', true);
 
 const app = express();
 app.use(cors());
-app.use(json());
-app.use(urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(
+  fileUpload({
+    createParentPath: true,
+  })
+);
 app.use(helmet());
 app.use(morgan('common'));
 app.use(helmet.crossOriginResourcePolicy({ policy: 'cross-origin' }));

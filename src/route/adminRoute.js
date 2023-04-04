@@ -22,7 +22,7 @@ router.patch('/goals/:id', verifyUserRequest, archivedCompanyGoal);
 
 // News Routes
 router.get('/news', getNews);
-router.post('/news', verifyUserRequest, createNews);
-router.delete('/news/:id', verifyUserRequest, deleteNews);
+router.post('/news', createNews);
+router.delete('/news/:id', deleteNews);
 
 export default router;
