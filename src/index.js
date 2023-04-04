@@ -33,7 +33,10 @@ app.use(helmet());
 app.use(morgan('common'));
 app.use(helmet.crossOriginResourcePolicy({ policy: 'cross-origin' }));
 
-app.use('/assets', express.static(path.join(__dirname, './assets')));
+app.use(
+  '/assets',
+  express.static(path.join(__dirname, './controllers/assets'))
+);
 
 // routes
 app.use('/admin', adminRoute);
