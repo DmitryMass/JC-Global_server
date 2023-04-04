@@ -22,6 +22,7 @@ export const createCompanyGoals = async (req, res) => {
     // отпралвеный через formdData при помощи JSON.stringify([...goals])
     const { month, goals, id } = req.body;
     const currGoal = await CompanyGoals.findById(id);
+
     if (!currGoal) {
       const newGoal = new CompanyGoals({
         month,
@@ -35,6 +36,7 @@ export const createCompanyGoals = async (req, res) => {
       goals: [...currGoal.goals, ...JSON.parse(goals)],
     });
     await currGoal.save();
+
     return res.status(200).send({ msg: 'Новая цель добавлена' });
   } catch (err) {
     return res
@@ -70,10 +72,13 @@ export const editCompanyGoals = async (req, res) => {
     const { id } = req.params;
     const goal = await CompanyGoals.findById(id);
     if (!goal) return res.status(404).send({ msg: 'Цель компании не найдена' });
+
     const editedGoal = goal.goals.find((i) => i.id.toString() === goalId);
+
     if (!editedGoal) {
       return res.status(404).send({ msg: 'Такая цель не найдена' });
     }
+
     if (newGoal) {
       editedGoal.goal = newGoal;
       editedGoal.complete = status;

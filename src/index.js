@@ -25,6 +25,7 @@ app.use(urlencoded({ extended: true }));
 app.use(helmet());
 app.use(morgan('common'));
 app.use(helmet.crossOriginResourcePolicy({ policy: 'cross-origin' }));
+
 app.use('/assets', express.static(path.join(__dirname, './assets')));
 
 // routes
