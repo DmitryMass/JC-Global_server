@@ -1,5 +1,6 @@
 import News from '../models/News.js';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -77,10 +78,22 @@ export const createNews = async (req, res) => {
 export const deleteNews = async (req, res) => {
   try {
     const { id } = req.params;
-    const news = await News.findByIdAndDelete(id);
+    const news = await News.findById(id);
     if (!news)
       return res.status(404).send({ msg: 'Такой новости не существует' });
 
+    news.imgPath.forEach((img) => {
+      const filePath = path.join(__dirname, 'assets', img);
+      fs.unlink(filePath, (err) => {
+        if (err) {
+          return res
+            .status(400)
+            .send({ msg: 'Ошибка сервера при удалении Файлов из новостей' });
+        }
+      });
+    });
+
+    await News.findByIdAndDelete(id);
     return res.status(200).send({ msg: 'Новость удалена' });
   } catch (err) {
     return res.status(500).send({ msg: 'Ошибка сервера при удалении новости' });
