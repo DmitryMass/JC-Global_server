@@ -48,13 +48,14 @@ export const createCompanyGoals = async (req, res) => {
 export const deleteCompanyGoals = async (req, res) => {
   try {
     const { id } = req.params;
-    const { currentGoalId } = req.body;
+    const { goalid } = req.headers;
+
     const goals = await CompanyGoals.findById(id);
     if (!goals)
       return res.status(404).send({ msg: 'Целей с текущим ID не найдено' });
 
     await goals.updateOne({
-      goals: goals.goals.filter((g) => g.id.toString() !== currentGoalId),
+      goals: goals.goals.filter((g) => g.id.toString() !== goalid),
     });
 
     await goals.save();
