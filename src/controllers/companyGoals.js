@@ -3,16 +3,11 @@ import CompanyGoals from '../models/CompanyGoals.js';
 export const getCurrentCompanyGoals = async (req, res) => {
   try {
     const goals = await CompanyGoals.find({ archived: false });
-    if (!goals.length)
-      return res.status(404).send({
-        msg: 'Цели компании еще не установлены или находятся в архиве',
-      });
-
     return res.status(200).send(goals);
   } catch (err) {
     return res
       .status(500)
-      .send({ msg: 'Проблемы с сервером при получении целей компании' });
+      .send({ msg: 'Проблеми з сервером при отриманні цілей.' });
   }
 };
 
@@ -37,11 +32,11 @@ export const createCompanyGoals = async (req, res) => {
     });
     await currGoal.save();
 
-    return res.status(200).send({ msg: 'Новая цель добавлена' });
+    return res.status(200).send({ msg: 'Нова ціль додана.' });
   } catch (err) {
     return res
       .status(500)
-      .send({ msg: `Проблемы с сервером при создании целей компании` });
+      .send({ msg: `Проблеми з сервером при створенні цілей.` });
   }
 };
 
@@ -51,19 +46,18 @@ export const deleteCompanyGoals = async (req, res) => {
     const { goalid } = req.headers;
 
     const goals = await CompanyGoals.findById(id);
-    if (!goals)
-      return res.status(404).send({ msg: 'Целей с текущим ID не найдено' });
+    if (!goals) return res.status(404).send({ msg: 'Цілей не знайдено.' });
 
     await goals.updateOne({
       goals: goals.goals.filter((g) => g.id.toString() !== goalid),
     });
 
     await goals.save();
-    return res.status(200).send({ msg: 'Цель удалена' });
+    return res.status(200).send({ msg: 'Ціль видалена.' });
   } catch (err) {
     return res
       .status(500)
-      .send({ msg: `Проблемы с сервером при удалении целей компании` });
+      .send({ msg: `Проблеми з сервером при видаленні цілі.` });
   }
 };
 
@@ -72,12 +66,12 @@ export const editCompanyGoals = async (req, res) => {
     const { newGoal, goalId, status = false } = req.body;
     const { id } = req.params;
     const goal = await CompanyGoals.findById(id);
-    if (!goal) return res.status(404).send({ msg: 'Цель компании не найдена' });
+    if (!goal) return res.status(404).send({ msg: 'Такої цілі не знайдено.' });
 
     const editedGoal = goal.goals.find((i) => i.id.toString() === goalId);
 
     if (!editedGoal) {
-      return res.status(404).send({ msg: 'Такая цель не найдена' });
+      return res.status(404).send({ msg: 'Така ціль не знайдена.' });
     }
 
     if (newGoal) {
@@ -89,7 +83,7 @@ export const editCompanyGoals = async (req, res) => {
         ),
       });
       await goal.save();
-      return res.status(200).send({ msg: 'Цель обновлена' });
+      return res.status(200).send({ msg: 'Ціль оновлена.' });
     }
 
     editedGoal.complete = status;
@@ -99,11 +93,9 @@ export const editCompanyGoals = async (req, res) => {
       ),
     });
     await goal.save();
-    return res.status(200).send({ msg: 'Цель обновлена' });
+    return res.status(200).send({ msg: 'Ціль оновлена.' });
   } catch (err) {
-    return res
-      .status(500)
-      .send({ msg: 'Проблемы при редактировании целей компании' });
+    return res.status(500).send({ msg: 'Проблеми при редагуванні цілей.' });
   }
 };
 
@@ -111,28 +103,26 @@ export const archivedCompanyGoal = async (req, res) => {
   try {
     const { id } = req.params;
     const goals = await CompanyGoals.findById(id);
-    if (!goals) return res.status(404).send({ msg: 'Целей не найдено' });
+    if (!goals) return res.status(404).send({ msg: 'Цілей не знайдено' });
     await goals.updateOne({
       archived: !goals.archived,
     });
     await goals.save();
 
-    return res.status(202).send({ msg: 'Успех!' });
+    return res.status(202).send({ msg: 'Успіх!' });
   } catch (err) {
     return res
       .status(500)
-      .send({ msg: 'Проблемы с сервером, не получилось архивировать цель' });
+      .send({ msg: 'Проблеми з сервером, не вдалося архівувати ціль.' });
   }
 };
 export const getArchivedGoals = async (req, res) => {
   try {
     const goals = await CompanyGoals.find({ archived: true });
-    if (!goals.length) return res.status(404).send({ msg: 'Целей не найдено' });
-
     return res.status(200).send(goals);
   } catch (err) {
     return res.status(500).send({
-      msg: 'Проблемы с сервером, не получилось получить архивированые цели',
+      msg: 'Проблеми з сервером, не вдалося отримати архівні цілі.',
     });
   }
 };

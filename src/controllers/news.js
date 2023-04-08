@@ -8,13 +8,13 @@ const __dirname = path.dirname(__filename);
 export const getNews = async (req, res) => {
   try {
     const news = await News.find();
-    if (!news) return res.status(404).send({ msg: 'Новостей пока нет.' });
+    if (!news) return res.status(404).send({ msg: 'Новин поки що немає.' });
 
     return res.status(200).send(news.sort((a, b) => b.createdAt - a.createdAt));
   } catch (err) {
     return res
       .status(500)
-      .send({ msg: 'Ошибка сервера при получении всех новостей' });
+      .send({ msg: 'Проблеми з сервером при отриманні новин.' });
   }
 };
 
@@ -71,7 +71,9 @@ export const createNews = async (req, res) => {
 
     return res.status(200).send(news);
   } catch (err) {
-    return res.status(500).send({ msg: 'Ошибка сервера при создании новости' });
+    return res
+      .status(500)
+      .send({ msg: 'Проблеми з сервером при створенні новини.' });
   }
 };
 
@@ -79,8 +81,7 @@ export const deleteNews = async (req, res) => {
   try {
     const { id } = req.params;
     const news = await News.findById(id);
-    if (!news)
-      return res.status(404).send({ msg: 'Такой новости не существует' });
+    if (!news) return res.status(404).send({ msg: 'Такої новини не існує.' });
 
     news.imgPath.forEach((img) => {
       const filePath = path.join(__dirname, 'assets', img);
@@ -88,14 +89,16 @@ export const deleteNews = async (req, res) => {
         if (err) {
           return res
             .status(400)
-            .send({ msg: 'Ошибка сервера при удалении Файлов из новостей' });
+            .send({ msg: 'Проблеми з сервером при видаленні фото новини.' });
         }
       });
     });
 
     await News.findByIdAndDelete(id);
-    return res.status(200).send({ msg: 'Новость удалена' });
+    return res.status(200).send({ msg: 'Новина видалена.' });
   } catch (err) {
-    return res.status(500).send({ msg: 'Ошибка сервера при удалении новости' });
+    return res
+      .status(500)
+      .send({ msg: 'Проблеми з сервером при видаленні новини.' });
   }
 };
