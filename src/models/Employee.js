@@ -11,17 +11,11 @@ const EmployeeSchema = mongoose.Schema(
       required: true,
       max: 70,
     },
-    name: {
+    fullName: {
       type: String,
       required: true,
       min: 2,
-      max: 25,
-    },
-    surname: {
-      type: string,
-      required: true,
-      min: 2,
-      max: 30,
+      max: 80,
     },
     phoneNumber: {
       type: String,
@@ -51,6 +45,10 @@ const EmployeeSchema = mongoose.Schema(
         // workHours: { type: String, default: '10' },
       },
     ],
+    plans: {
+      type: Array,
+      default: [],
+    },
   },
   {
     timestamps: true,

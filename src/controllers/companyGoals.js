@@ -95,7 +95,9 @@ export const editCompanyGoals = async (req, res) => {
     await goal.save();
     return res.status(200).send({ msg: 'Ціль оновлена.' });
   } catch (err) {
-    return res.status(500).send({ msg: 'Проблеми при редагуванні цілей.' });
+    return res
+      .status(500)
+      .send({ msg: 'Проблеми з сервером під час редагування цілей.' });
   }
 };
 

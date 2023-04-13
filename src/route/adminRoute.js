@@ -9,6 +9,7 @@ import {
 } from '../controllers/companyGoals.js';
 import { verifyUserRequest } from '../middleware/verifyUserRequest.js';
 import { createNews, deleteNews, getNews } from '../controllers/news.js';
+import { employeeRegister } from '../controllers/employees.js';
 
 const router = Router();
 
@@ -26,5 +27,8 @@ router.patch('/goals/:id', archivedCompanyGoal);
 router.get('/news', getNews);
 router.post('/news', createNews);
 router.delete('/news/:id', deleteNews);
+
+// Register employeer
+router.post('/register', employeeRegister);
 
 export default router;
