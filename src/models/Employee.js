@@ -34,6 +34,10 @@ const EmployeeSchema = mongoose.Schema(
       type: String,
       default: '0',
     },
+    category: {
+      type: String,
+      default: '',
+    },
     schedule: [
       {
         _id: false,

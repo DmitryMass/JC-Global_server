@@ -3,9 +3,11 @@ import { Employee } from '../models/Employee.js';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
+import Category from '../models/Category.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Auth
 export const employeeRegister = async (req, res) => {
   try {
     const { email, password, fullName, phoneNumber, jobTitle, category } =
@@ -30,20 +32,60 @@ export const employeeRegister = async (req, res) => {
 
     await newEmployee.save();
 
-    if (file) {
-      file.mv(`${__dirname}/assets/${newFileName}`, (err) => {
-        if (err) {
-          console.log(err);
-          return res.status(500).send(err);
-        }
-        return res.status(200).send({ msg: 'Співробітника додано' });
+    const categories = await Category.findOne();
+    if (categories) {
+      await categories.updateOne({
+        [category.toLowerCase()]: [
+          ...categories[category.toLowerCase()],
+          newEmployee._id,
+        ],
       });
     }
 
-    return res.status(200).send({ msg: 'Співробітника додано' });
+    if (!file) {
+      return res.status(200).send({ msg: 'Співробітника додано без фото' });
+    }
+
+    file.mv(`${__dirname}/assets/${newFileName}`, (err) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).send(err);
+      }
+      return res.status(200).send({ msg: 'Співробітника додано' });
+    });
   } catch (err) {
     return res
       .status(500)
       .send({ msg: 'Помилка серверу при реєстрації співробітника.' });
+  }
+};
+
+// Employees
+
+export const getEmployees = async (req, res) => {
+  try {
+    const categories = await Category.find()
+      .populate('sales')
+      .populate('hr')
+      .populate('accountants');
+    return res.status(200).send(categories);
+  } catch (err) {
+    return res
+      .status(500)
+      .send({ msg: 'Проблема з сервером при отриманні співробітників' });
+  }
+};
+
+export const getEmployee = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const employee = await Employee.findById(id);
+    if (!employee)
+      return res.status(404).send({ msg: 'Співробітника не знайдено' });
+    return res.status(200).send(employee);
+  } catch (err) {
+    return res
+      .status(200)
+      .send({ msg: 'Проблеми з сервером при отриманні співробітника' });
   }
 };

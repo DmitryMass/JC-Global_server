@@ -11,6 +11,7 @@ import path from 'path';
 import errorHandler from './middleware/errorHandler.js';
 //
 import adminRoute from './route/adminRoute.js';
+import employeesRoute from './route/employeesRoute.js';
 import fileUpload from 'express-fileupload';
 
 // config
@@ -40,6 +41,7 @@ app.use(
 
 // routes
 app.use('/admin', adminRoute);
+app.use('/employees', employeesRoute);
 // error handler
 app.use(errorHandler);
 
