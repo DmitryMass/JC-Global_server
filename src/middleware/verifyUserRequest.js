@@ -3,7 +3,7 @@ dotenv.config();
 
 export const verifyUserRequest = async (req, res, next) => {
   try {
-    const verifyToken = req.header('Verify');
+    const verifyToken = req.header('role');
 
     if (!verifyToken) {
       return res.status(401).send({ msg: 'Ошибка верификации пользователя' });

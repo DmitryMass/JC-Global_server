@@ -1,9 +1,12 @@
 import { compare, hash } from 'bcrypt';
+import * as dotenv from 'dotenv';
+dotenv.config();
 import { Employee } from '../models/Employee.js';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import Category from '../models/Category.js';
+import pkg from 'jsonwebtoken';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -87,5 +90,32 @@ export const getEmployee = async (req, res) => {
     return res
       .status(200)
       .send({ msg: 'Проблеми з сервером при отриманні співробітника' });
+  }
+};
+
+export const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const employee = await Employee.findOne({ email });
+    if (!employee) {
+      return res
+        .status(404)
+        .send({ msg: 'Співробітника з такою поштою не існує.' });
+    }
+
+    const checkPassword = await compare(password, employee.password);
+    if (!checkPassword)
+      return res.status(401).send({ msg: 'Введені не вірні данні.' });
+    const token = pkg.sign({ id: employee._id }, process.env.SECRET_KEY);
+    return res.status(200).send({
+      userData: {
+        email: employee.email,
+        fullName: employee.fullName,
+        role: employee.role,
+        token,
+      },
+    });
+  } catch (err) {
+    return res.status(500).send({ msg: 'Помилка при логуванні' });
   }
 };

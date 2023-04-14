@@ -17,6 +17,10 @@ const EmployeeSchema = mongoose.Schema(
       min: 2,
       max: 80,
     },
+    password: {
+      type: String,
+      required: true,
+    },
     phoneNumber: {
       type: String,
       required: true,
