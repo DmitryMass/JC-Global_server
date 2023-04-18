@@ -13,8 +13,6 @@ export const getCurrentCompanyGoals = async (req, res) => {
 
 export const createCompanyGoals = async (req, res) => {
   try {
-    // Goals будет массив обьектов {goal: 'Somegoal', complete:false}
-    // отпралвеный через formdData при помощи JSON.stringify([...goals])
     const { month, goals, id } = req.body;
     const currGoal = await CompanyGoals.findById(id);
 
