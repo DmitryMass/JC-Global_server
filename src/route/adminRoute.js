@@ -10,7 +10,10 @@ import {
 import { verifyUserRequest } from '../middleware/verifyUserRequest.js';
 import { createNews, deleteNews, getNews } from '../controllers/news.js';
 import { employeeRegister } from '../controllers/employees.js';
-import { createOrUpdateEmployeePlan } from '../controllers/plans.js';
+import {
+  createOrUpdateEmployeePlan,
+  setEmployeeActivePlan,
+} from '../controllers/plans.js';
 
 const router = Router();
 
@@ -31,7 +34,7 @@ router.delete('/news/:id', verifyUserRequest, deleteNews);
 
 // employee
 router.post('/plan/:id', verifyUserRequest, createOrUpdateEmployeePlan);
-
+router.post('/employeePlan/:id', setEmployeeActivePlan);
 // Register employeer
 router.post('/register', verifyUserRequest, employeeRegister);
 

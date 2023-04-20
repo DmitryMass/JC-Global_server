@@ -135,6 +135,7 @@ export const login = async (req, res) => {
     const token = pkg.sign({ id: employee._id }, process.env.SECRET_KEY);
     return res.status(200).send({
       userData: {
+        id: employee._id,
         email: employee.email,
         fullName: employee.fullName,
         role: employee.role,
