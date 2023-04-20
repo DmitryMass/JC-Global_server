@@ -10,6 +10,21 @@ import pkg from 'jsonwebtoken';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const monthLabels = [
+  'Січень',
+  'Лютий',
+  'Березень',
+  'Квітень',
+  'Травень',
+  'Червень',
+  'Липень',
+  'Серпень',
+  'Вересень',
+  'Жовтень',
+  'Листопад',
+  'Грудень',
+];
+
 // Auth
 export const employeeRegister = async (req, res) => {
   try {
@@ -85,7 +100,18 @@ export const getEmployee = async (req, res) => {
     const employee = await Employee.findById(id);
     if (!employee)
       return res.status(404).send({ msg: 'Співробітника не знайдено' });
-    return res.status(200).send(employee);
+
+    const sortedPlan = employee.plans.sort((a, b) => {
+      return monthLabels.indexOf(a.month) - monthLabels.indexOf(b.month);
+    });
+    await employee.updateOne({
+      plans: sortedPlan,
+    });
+    await employee.save();
+
+    const updatedEmployee = await Employee.findById(id);
+
+    return res.status(200).send(updatedEmployee);
   } catch (err) {
     return res
       .status(200)
