@@ -62,6 +62,47 @@ export const createSchedule = async (req, res) => {
 
 export const editEmployeeScheduleDay = async (req, res) => {
   try {
+    const { id } = req.params;
+    const {
+      date,
+      month,
+      schedule,
+      dayWorked = false,
+      dayWorkedCount = 0,
+    } = req.body;
+    const employee = await Employee.findById(id);
+
+    if (!employee)
+      return res.status(404).send({ msg: 'Такого співробітника не знайдено' });
+
+    const isSchedule = employee.schedule.find((m) => m.hasOwnProperty(month));
+    if (!isSchedule)
+      return res.status(404).send({ msg: 'Такого місяця не знайдено' });
+
+    const monthDataIndex = employee.schedule.findIndex((m) =>
+      m.hasOwnProperty(month)
+    );
+    const updatedData = JSON.parse(
+      JSON.stringify(employee.schedule[monthDataIndex])
+    );
+
+    const dayIndex = updatedData[month].findIndex((day) => day.date === date);
+    if (dayIndex === -1)
+      return res
+        .status(401)
+        .send({ msg: 'Такого робочого дня не встановлено' });
+
+    updatedData[month][dayIndex].schedule = schedule;
+
+    if (dayWorked && dayWorkedCount > 0) {
+      updatedData[month][dayIndex].dayWorked = dayWorked;
+      updatedData[month][dayIndex].dayWorkedCount = dayWorkedCount;
+    }
+
+    await employee.updateOne({
+      $set: { [`schedule.${monthDataIndex}`]: updatedData },
+    });
+    return res.status(200).send({ msg: 'Графік оновлено.' });
   } catch (err) {
     return res
       .status(500)
