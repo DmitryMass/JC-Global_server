@@ -42,17 +42,10 @@ const EmployeeSchema = mongoose.Schema(
       type: String,
       default: '',
     },
-    schedule: [
-      {
-        _id: false,
-        id: { type: Schema.Types.ObjectId, required: true, auto: true },
-        day: { type: String, required: true },
-        time: { type: String, required: true },
-        // workedShift: { type: Boolean, default: false },
-        // workDay: { type: String, default: '0' },
-        // workHours: { type: String, default: '10' },
-      },
-    ],
+    schedule: {
+      type: Array,
+      default: [],
+    },
     plans: {
       type: Array,
       default: [],

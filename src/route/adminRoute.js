@@ -14,6 +14,7 @@ import {
   createOrUpdateEmployeePlan,
   setEmployeeActivePlan,
 } from '../controllers/plans.js';
+import { createSchedule } from '../controllers/schedule.js';
 
 const router = Router();
 
@@ -37,5 +38,8 @@ router.post('/plan/:id', verifyUserRequest, createOrUpdateEmployeePlan);
 router.post('/employeePlan/:id', setEmployeeActivePlan);
 // Register employeer
 router.post('/register', verifyUserRequest, employeeRegister);
+
+// employee Schedule
+router.post('/schedule/:id', createSchedule);
 
 export default router;
