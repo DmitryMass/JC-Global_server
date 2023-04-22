@@ -43,7 +43,7 @@ router.post('/employeePlan/:id', setEmployeeActivePlan);
 router.post('/register', verifyUserRequest, employeeRegister);
 
 // employee Schedule
-router.post('/schedule/:id', createSchedule);
+router.post('/schedule/:id', verifyUserRequest, createSchedule);
 router.put('/schedule/:id', editEmployeeScheduleDay);
 
 export default router;

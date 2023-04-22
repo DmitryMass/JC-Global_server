@@ -92,7 +92,9 @@ export const editEmployeeScheduleDay = async (req, res) => {
         .status(401)
         .send({ msg: 'Такого робочого дня не встановлено' });
 
-    updatedData[month][dayIndex].schedule = schedule;
+    if (schedule) {
+      updatedData[month][dayIndex].schedule = schedule;
+    }
 
     if (dayWorked && dayWorkedCount > 0) {
       updatedData[month][dayIndex].dayWorked = dayWorked;
