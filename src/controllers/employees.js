@@ -98,6 +98,7 @@ export const getEmployee = async (req, res) => {
   try {
     const { id } = req.params;
     const employee = await Employee.findById(id);
+
     if (!employee)
       return res.status(404).send({ msg: 'Співробітника не знайдено' });
 
@@ -114,7 +115,7 @@ export const getEmployee = async (req, res) => {
     return res.status(200).send(updatedEmployee);
   } catch (err) {
     return res
-      .status(200)
+      .status(500)
       .send({ msg: 'Проблеми з сервером при отриманні співробітника' });
   }
 };

@@ -50,10 +50,24 @@ const EmployeeSchema = mongoose.Schema(
       type: Array,
       default: [],
     },
+    archive: {
+      type: Array,
+      default: [],
+    },
+    archivePlan: {
+      type: Array,
+      default: [],
+      created_at: {
+        type: Date,
+        default: Date.now,
+        expires: '24m',
+      },
+    },
   },
   {
     timestamps: true,
   }
 );
+// Данные архива удаляются через 24месяца либо пока их не удалят.
 
 export const Employee = mongoose.model('Employee', EmployeeSchema);

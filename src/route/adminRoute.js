@@ -15,6 +15,7 @@ import {
   setEmployeeActivePlan,
 } from '../controllers/plans.js';
 import {
+  archiveMonth,
   createSchedule,
   editEmployeeScheduleDay,
 } from '../controllers/schedule.js';
@@ -45,5 +46,6 @@ router.post('/register', verifyUserRequest, employeeRegister);
 // employee Schedule
 router.post('/schedule/:id', verifyUserRequest, createSchedule);
 router.put('/schedule/:id', editEmployeeScheduleDay);
+router.post('/schedule/archive/:id', verifyUserRequest, archiveMonth);
 
 export default router;

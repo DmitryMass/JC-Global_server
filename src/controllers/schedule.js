@@ -37,9 +37,9 @@ export const createSchedule = async (req, res) => {
     );
     const isDay = updatedData[month].find((day) => day.date === date);
     if (isDay)
-      return res
-        .status(401)
-        .send({ msg: 'Така дата вже встановлена. Можно тільки редагувати.' });
+      return res.status(401).send({
+        msg: 'Така дата вже встановлена. Доступно тільки редагування зміни. Якщо хочете додати такий же місяць, додайте в архів поточний.',
+      });
 
     updatedData[month].push({
       date,
@@ -109,5 +109,41 @@ export const editEmployeeScheduleDay = async (req, res) => {
     return res
       .status(500)
       .send({ msg: 'Помилка серверу при редагуванні графіку' });
+  }
+};
+
+export const archiveMonth = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { month, date } = req.body;
+
+    const employee = await Employee.findById(id);
+    if (!employee)
+      return res.status(404).send({ msg: 'Такого співробітника не знайдено' });
+
+    const monthDataIndex = employee.schedule.findIndex((m) =>
+      m.hasOwnProperty(month)
+    );
+
+    if (monthDataIndex === -1) {
+      return res.status(404).send({ msg: 'Такого місяця не знайдено' });
+    }
+
+    const monthData = JSON.parse(
+      JSON.stringify(employee.schedule[monthDataIndex][month])
+    );
+
+    await employee.updateOne({
+      $pull: { schedule: { [month]: monthData } },
+      $push: {
+        archive: { [`${month}${date.slice(-4)}`]: monthData },
+      },
+    });
+
+    return res.status(200).send({ msg: 'Місячний графік було зархівовано.' });
+  } catch (err) {
+    return res
+      .status(500)
+      .send({ msg: 'Не вдалося архівувати місяць. Помилка серверу.' });
   }
 };
