@@ -7,6 +7,7 @@ import fs from 'fs';
 import { fileURLToPath } from 'url';
 import Category from '../models/Category.js';
 import pkg from 'jsonwebtoken';
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -145,5 +146,35 @@ export const login = async (req, res) => {
     });
   } catch (err) {
     return res.status(500).send({ msg: 'Помилка при логуванні' });
+  }
+};
+
+export const fireEmployee = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const employee = await Employee.findById(id);
+
+    if (!employee) {
+      return res.status(404).send({ msg: 'Співробітника не знайдено' });
+    }
+    await Category.updateMany(
+      {
+        $or: [{ sales: id }, { hr: id }, { accountants: id }],
+      },
+      {
+        $pull: {
+          sales: id,
+          hr: id,
+          accountants: id,
+        },
+      }
+    );
+
+    await employee.deleteOne({ _id: id });
+    return res.status(200).send({ msg: 'Співробітника звільнено.' });
+  } catch (err) {
+    return res
+      .status(500)
+      .send({ msg: 'Не вдалося звільнити співробітника. Помилка серверу.' });
   }
 };

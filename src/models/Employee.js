@@ -1,6 +1,6 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose from 'mongoose';
 
-const EmployeeSchema = mongoose.Schema(
+export const EmployeeSchema = mongoose.Schema(
   {
     role: {
       type: String,
@@ -68,6 +68,7 @@ const EmployeeSchema = mongoose.Schema(
     timestamps: true,
   }
 );
+
 // Данные архива удаляются через 24месяца либо пока их не удалят.
 
 export const Employee = mongoose.model('Employee', EmployeeSchema);
