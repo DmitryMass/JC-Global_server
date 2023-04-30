@@ -3,7 +3,6 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 import { Employee } from '../models/Employee.js';
 import path from 'path';
-import fs from 'fs';
 import { fileURLToPath } from 'url';
 import Category from '../models/Category.js';
 import pkg from 'jsonwebtoken';
@@ -31,6 +30,15 @@ export const employeeRegister = async (req, res) => {
   try {
     const { email, password, fullName, phoneNumber, jobTitle, category } =
       req.body;
+
+    const validCategories = ['hr', 'sales', 'accountants'];
+    if (!validCategories.includes(category.toLowerCase())) {
+      return res
+        .status(400)
+        .send({
+          msg: 'Не верное отделение. Выберите один из (HR / Sales/ Accountants)',
+        });
+    }
 
     const isEmployee = await Employee.findOne({ email });
     if (isEmployee)
