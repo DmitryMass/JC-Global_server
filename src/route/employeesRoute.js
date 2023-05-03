@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import {
+  editEmployeeData,
   fireEmployee,
   getEmployee,
   getEmployees,
@@ -12,5 +13,6 @@ router.get('/categories', getEmployees);
 router.get('/employee/:id', getEmployee);
 router.post('/login', login);
 router.delete('/:id', fireEmployee);
+router.put('/employee/:id', editEmployeeData);
 
 export default router;

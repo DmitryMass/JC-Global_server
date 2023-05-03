@@ -102,3 +102,25 @@ export const deleteNews = async (req, res) => {
       .send({ msg: 'Проблеми з сервером при видаленні новини.' });
   }
 };
+
+export const editNews = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { text, header } = req.body;
+    const dbNews = await News.findById(id);
+    if (!dbNews) {
+      return res.status(404).send({ msg: 'Новина не знайдена.' });
+    }
+
+    await dbNews.updateOne({
+      header,
+      text,
+    });
+
+    return res.status(200).send({ msg: 'Новина оновлена.' });
+  } catch (err) {
+    return req
+      .status(500)
+      .send({ msg: 'Помилка сервер при редагуванні новин' });
+  }
+};

@@ -8,7 +8,12 @@ import {
   getCurrentCompanyGoals,
 } from '../controllers/companyGoals.js';
 import { verifyUserRequest } from '../middleware/verifyUserRequest.js';
-import { createNews, deleteNews, getNews } from '../controllers/news.js';
+import {
+  createNews,
+  deleteNews,
+  editNews,
+  getNews,
+} from '../controllers/news.js';
 import { employeeRegister } from '../controllers/employees.js';
 import {
   createOrUpdateEmployeePlan,
@@ -36,6 +41,7 @@ router.patch('/goals/:id', verifyUserRequest, archivedCompanyGoal);
 router.get('/news', getNews);
 router.post('/news', verifyUserRequest, createNews);
 router.delete('/news/:id', verifyUserRequest, deleteNews);
+router.put('/news/:id', verifyUserRequest, editNews);
 
 // employee
 router.post('/plan/:id', verifyUserRequest, createOrUpdateEmployeePlan);

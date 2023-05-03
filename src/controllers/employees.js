@@ -33,11 +33,9 @@ export const employeeRegister = async (req, res) => {
 
     const validCategories = ['hr', 'sales', 'accountants'];
     if (!validCategories.includes(category.toLowerCase())) {
-      return res
-        .status(400)
-        .send({
-          msg: 'Не верное отделение. Выберите один из (HR / Sales/ Accountants)',
-        });
+      return res.status(400).send({
+        msg: 'Не верное отделение. Выберите один из (HR / Sales/ Accountants)',
+      });
     }
 
     const isEmployee = await Employee.findOne({ email });
@@ -184,5 +182,31 @@ export const fireEmployee = async (req, res) => {
     return res
       .status(500)
       .send({ msg: 'Не вдалося звільнити співробітника. Помилка серверу.' });
+  }
+};
+
+export const editEmployeeData = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { fullName, category, phoneNumber, jobTitle, email } = req.body;
+    const employee = await Employee.findById(id);
+
+    if (!employee) {
+      return res.status(404).send({ msg: 'Співробітника не знайдено' });
+    }
+
+    await employee.updateOne({
+      email,
+      fullName,
+      category,
+      phoneNumber,
+      jobTitle,
+    });
+
+    return res.status(200).send({ msg: 'Дані про співробітника оновлені.' });
+  } catch (err) {
+    return res
+      .status(500)
+      .send({ msg: 'Помилка серверу при редагуванні даних співробітника.' });
   }
 };
