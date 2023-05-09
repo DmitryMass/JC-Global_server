@@ -14,7 +14,7 @@ import {
   editNews,
   getNews,
 } from '../controllers/news.js';
-import { employeeRegister } from '../controllers/employees.js';
+import { employeeRegister, resetPassword } from '../controllers/employees.js';
 import {
   createOrUpdateEmployeePlan,
   setEmployeeActivePlan,
@@ -46,6 +46,8 @@ router.put('/news/:id', verifyUserRequest, editNews);
 // employee
 router.post('/plan/:id', verifyUserRequest, createOrUpdateEmployeePlan);
 router.post('/employeePlan/:id', setEmployeeActivePlan);
+router.post('/resetpassword', verifyUserRequest, resetPassword);
+
 // Register employeer
 router.post('/register', verifyUserRequest, employeeRegister);
 
